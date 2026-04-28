@@ -10,3 +10,8 @@ Route::post('/subscribe', [NewsletterController::class, 'subscribe'])
 
 Route::post('/unsubscribe', [NewsletterController::class, 'unsubscribe'])
     ->name('unsubscribe');
+
+Route::post('/check-status', [NewsletterController::class, 'checkStatus'])
+    ->name('check.status');
+
+Route::get('/dashboard', [NewsletterController::class, 'dashboard']);

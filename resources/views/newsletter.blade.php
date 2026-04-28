@@ -61,6 +61,7 @@
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
+            margin-top: 5px;
         }
 
         .subscribe-btn {
@@ -81,6 +82,15 @@
             background: #c0392b;
         }
 
+        .status-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .status-btn:hover {
+            background: #27ae60;
+        }
+
         .success {
             background: #d4edda;
             color: #155724;
@@ -98,7 +108,7 @@
         }
 
         hr {
-            margin: 25px 0;
+            margin: 20px 0;
             border: none;
             border-top: 1px solid #eee;
         }
@@ -158,6 +168,25 @@
 
         <button type="submit" class="unsubscribe-btn">
             Unsubscribe
+        </button>
+
+    </form>
+
+
+    <hr>
+
+
+    {{-- Check Status Form --}}
+    <form method="POST" action="{{ route('check.status') }}">
+
+        @csrf
+
+        <div class="form-group">
+            <input type="email" name="email" placeholder="Check subscription status" required>
+        </div>
+
+        <button type="submit" class="status-btn">
+            Check Status
         </button>
 
     </form>
