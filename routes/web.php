@@ -8,7 +8,8 @@ Route::get('/', [NewsletterController::class, 'index']);
 Route::post('/subscribe', [NewsletterController::class, 'subscribe'])
     ->name('subscribe');
 
-Route::post('/unsubscribe', [NewsletterController::class, 'unsubscribe'])
+
+Route::get('/unsubscribe/{email}', [NewsletterController::class, 'unsubscribe'])
     ->name('unsubscribe');
 
 Route::post('/check-status', [NewsletterController::class, 'checkStatus'])

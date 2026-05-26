@@ -7,52 +7,43 @@ use Spatie\Newsletter\Facades\Newsletter;
 
 class NewsletterController extends Controller
 {
-
-    // Show form
     public function index()
     {
         return view('newsletter');
     }
 
-    // Subscribe email
     public function subscribe(Request $request)
     {
-
         $request->validate([
             'email' => 'required|email'
         ]);
 
         try {
+            if (Newsletter::isSubscribed($request->email)) {
+                return response()->json(['error' => 'Email is already subscribed!'], 400);
+            }
 
             if (Newsletter::subscribe($request->email)) {
-
-                return back()->with('success', 'Email subscribed successfully!');
+                return response()->json(['success' => 'Email subscribed successfully!']);
             } else {
-
-                return back()->with('error', 'Email already subscribed or failed.');
+                return response()->json(['error' => 'Failed to subscribe.'], 400);
             }
         } catch (\Exception $e) {
-
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
 
-    // Unsubscribe email
-    public function unsubscribe(Request $request)
+    public function unsubscribe($email)
     {
-
-        $request->validate([
-            'email' => 'required|email'
-        ]);
-
         try {
-
-            Newsletter::unsubscribe($request->email);
-
-            return back()->with('success', 'Email unsubscribed successfully!');
+            if (Newsletter::isSubscribed($email)) {
+                Newsletter::unsubscribe($email);
+                return "<h1>✅ You have been successfully unsubscribed. We will miss you!</h1>";
+            }
+            
+            return "<h1>⚠️ You are already unsubscribed or email not found.</h1>";
         } catch (\Exception $e) {
-
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            return "<h1>❌ Error: " . $e->getMessage() . "</h1>";
         }
     }
 
@@ -63,7 +54,6 @@ class NewsletterController extends Controller
         ]);
 
         try {
-
             if (Newsletter::isSubscribed($request->email)) {
                 return back()->with('success', 'Email is already subscribed!');
             } else {

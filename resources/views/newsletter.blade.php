@@ -5,7 +5,6 @@
     <title>Laravel 12 Newsletter</title>
 
     <style>
-
         body {
             font-family: Arial, Helvetica, sans-serif;
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -46,6 +45,7 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
+            box-sizing: border-box;
         }
 
         input[type="email"]:focus {
@@ -112,7 +112,6 @@
             border: none;
             border-top: 1px solid #eee;
         }
-
     </style>
 
 </head>
@@ -123,14 +122,14 @@
     <h1>Newsletter</h1>
     <p class="subtitle">Subscribe to receive latest updates</p>
 
-    {{-- Success Message --}}
+    <div id="messageBox"></div>
+
     @if(session('success'))
         <div class="success">
             {{ session('success') }}
         </div>
     @endif
 
-    {{-- Error Message --}}
     @if(session('error'))
         <div class="error">
             {{ session('error') }}
@@ -138,60 +137,86 @@
     @endif
 
 
-    {{-- Subscribe Form --}}
-    <form method="POST" action="{{ route('subscribe') }}">
-
+    <form id="subscribeForm">
         @csrf
-
         <div class="form-group">
             <input type="email" name="email" placeholder="Enter your email" required>
         </div>
-
         <button type="submit" class="subscribe-btn">
             Subscribe
         </button>
-
     </form>
-
 
     <hr>
 
-
-    {{-- Unsubscribe Form --}}
-    <form method="POST" action="{{ route('unsubscribe') }}">
-
+    <form id="unsubscribeForm">
         @csrf
-
         <div class="form-group">
-            <input type="email" name="email" placeholder="Enter your email" required>
+            <input type="email" name="email" id="unsubEmail" placeholder="Enter your email" required>
         </div>
-
         <button type="submit" class="unsubscribe-btn">
             Unsubscribe
         </button>
-
     </form>
-
 
     <hr>
 
-
-    {{-- Check Status Form --}}
     <form method="POST" action="{{ route('check.status') }}">
-
         @csrf
-
         <div class="form-group">
             <input type="email" name="email" placeholder="Check subscription status" required>
         </div>
-
         <button type="submit" class="status-btn">
             Check Status
         </button>
-
     </form>
 
 </div>
+
+<script>
+    document.getElementById('subscribeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let btn = this.querySelector('button');
+        let messageBox = document.getElementById('messageBox');
+        let formData = new FormData(this);
+        
+        btn.innerHTML = 'Subscribing...';
+        btn.disabled = true;
+
+        fetch('{{ route('subscribe') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(async response => {
+            let data = await response.json();
+            if(response.ok) {
+                messageBox.innerHTML = '<div class="success">' + data.success + '</div>';
+                this.reset();
+            } else {
+                let errorMsg = data.error || 'Something went wrong';
+                messageBox.innerHTML = '<div class="error">' + errorMsg + '</div>';
+            }
+            btn.innerHTML = 'Subscribe';
+            btn.disabled = false;
+        })
+        .catch(error => {
+            messageBox.innerHTML = '<div class="error">Server Error!</div>';
+            btn.innerHTML = 'Subscribe';
+            btn.disabled = false;
+        });
+    });
+
+    document.getElementById('unsubscribeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let email = document.getElementById('unsubEmail').value;
+        window.location.href = '/unsubscribe/' + encodeURIComponent(email);
+    });
+</script>
 
 </body>
 </html>
