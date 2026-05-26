@@ -15,4 +15,4 @@ Route::get('/unsubscribe/{email}', [NewsletterController::class, 'unsubscribe'])
 Route::post('/check-status', [NewsletterController::class, 'checkStatus'])
     ->name('check.status');
 
-Route::get('/dashboard', [NewsletterController::class, 'dashboard']);
+Route::get('/dashboard', [NewsletterController::class, 'dashboard']); 
